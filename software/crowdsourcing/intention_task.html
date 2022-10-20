@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<link href="https://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<style>
+    .content {
+        display: inline-flex;
+    }
+
+    li {
+        list-style-type: upper-roman;
+    }
+
+    li.dot {
+        list-style-type: disc;
+        font-weight: bold;
+    }
+
+    .introduction-title {
+        color: blue;
+        font-weight: bold;
+        font-size: xx-large;
+    }
+</style>
+
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+      please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+<crowd-form id="all" answer-format="flatten-objects">
+
+    <!-- The crowd-classifier element will create a tool for the Worker to select the
+           correct answer to your question -->
+
+    <div class="panel panel-default">
+        <div class="panel-heading">VIDEO</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <classification-target>
+                        <video id="videoPlayerNew" width="100%" height="350" controls>
+
+                            <!-- Your video file URLs will be substituted for the "video_url" attribute below when
+                                   you publish a batch with a CSV input file containing multiple video file URLs -->
+                            <source :src="dynamic.video_url" type="video/mp4">
+
+                        </video>
+                    </classification-target>
+                </div>
+                <div id="questions" class="col-sm-6">
+                    <h2>Watch the video and complete the following Tasks</h2>
+                    <p style="font-size: 120%">This task requires collecting answers for a few thousand videos. Experienced workers are highly encouraged to work on the other HITs of this work.Any other questions,please send email to "<b style="color:red">monash.dialogue@gmail.com</b>" to get further instructions</p>
+                    <h3>Complete the following Sentence about People's Intention,you are required to input <b>a concrete intention</b> and <b>a high-level intention</b> into the input area,<b style="color:red">your answer needs to be based on the sequence of actions provided!</b>. (please read the instructions carefully before accepting hits)</h3>
+                    <ol id="intention">
+                        <li>
+                            <div class="panel panel-default">
+                                <div class="panel-heading"></div>
+                                <div class="panel-body">
+                                        <div id="intent-detail" class="col-sm-12">
+                                       <p style="font-size: 200%;color: red"><b>Actions:</b>{{ dynamic.intention.action }}</p>
+                                       </div>
+                                        <div id="intent" class="col-sm-12">
+                                            <label style="font-size: 120%">The person has taken the above actions in the video because he/she wants to</label>
+                                            <input type='text' class='intent-input'
+                                                    oninput='validate(this)'
+                                                    name ='intention'
+                                                    disabled
+                                                    placeholder='write down the intention'
+                                                    required='required'
+                    style="width: 40%;border-color: #878787;border-style: solid;border-top-width: 0px;border-right-width: 0px;border-bottom: #787878 1px solid;border-left-width: 0px;font-size: 120%">
+                                        <label style="font-size: 120%">.</label>
+                                        </div>
+
+<!--                                        <input  placeholder="input the concrete intentions.." type="text" required="required" :name="dynamic.intention.name"-->
+<!--                                           required="required"-->
+<!--                                           style="width: 100%;border-color: #878787;border-style: solid;border-top-width: 0px;border-right-width: 0px;border-bottom: #787878 1px solid;border-left-width: 0px">-->
+                                    </div>
+
+                                    <div class="form-row">
+                                    <!--
+                                    <h3>{{ dynamic.intention.title }}</h3>
+                                    -->
+                                    <div class="instructions">
+                                        <h3 style="color: red">Instructions:</h3>
+                                            <p style="font-size: 110%">Please fill a concrete intention and a high-level intention the person wants to do. A intention is achieved by taking a sequence of fine-grained actions. For example,
+                                            a concrete intention <i>clean the kitchen</i> consists of <i>empty the dishwasher</i>, <i>dust the tops of fridges and cabinets</i>, <i>deep clean the sink</i>, etc.. </p>
+                                            <!--p style="font-size: 110%">You should choose <b>The intention is ambiguous.</b>, if you cannot tell what the person intends to do, e.g. the person simply walks through a room without doing anything else.
+                                            or you cannot summarize the actions the person has taken into one or two high-level activities o. For example, the person was watching a movie first, then opened his bag, took out a book, and put it on the table etc.</p -->
+
+                                            <p style="font-size: 110%">The intention should explain most of the actions. If there are more than one intentions, choose the one covering most of the actions.</p>
+                                            <p style="font-size: 110%">Describe the intention with a verb phrase when possible, such as "do the laundry" and "go to bed".</p>
+                                            <p style="font-size: 110%">the high-level intention is summarized from concrete intentions and more abstract</p>
+
+                                        <p style="font-size: 120%;color: blue"><b>Good examples:</b></p>
+                                        <ul>
+                                            <li style="font-size: 110%">drink water while watching out the window;relax himself (Actions: smiling -> drinking -> watching out the window)</li>
+                                            <li style="font-size: 110%">eat a sandwich;satisfy his hunger (Actions: walk to the kitchen -> open the refrigerator -> take out a sandwich -> put the sandwich in a plate)</li>
+                                            <li style="font-size: 110%">have a joyful activity;entertain himself (Actions: sitting on the sofa -> drinking from a glass -> watching Television -> laughing while they drink.)</li>
+                                        </ul>
+                                        <br/>
+                                        <p style="font-size: 120%;color: red"><b>Bad examples:</b></p>
+                                        <ul>
+                                            <li style="font-size: 110%">drink (Actions: smiling -> drinking -> watching out the window)
+                                            <p><i>Explanation: drink does not explain other actions. <b>Do not copy</b> an action from the provided actions as intention.</i></p>
+                                            </li>
+                                            </li>
+                                            <li style="font-size: 110%">Eating (Actions: walk to the kitchen -> open the refrigerator -> take out a sandwich)
+                                            <p><i>Explanation: eat what? too general</i></p>
+                                            </li>
+                                            <!-- <li style="font-size: 110%">I. listen to music II. read magazine(Explanation: wrong format, should separate intentions by ;, no indexing.)</li>-->
+                                        </ul>
+                                    </div>
+
+
+
+
+                                        <!--
+                                        <div class="col-sm-12">
+                                            <p>
+                                            <label> <input type="checkbox" id="chk1"
+                                                           value="checkbox">The intention is ambiguous.</label>
+
+                                            </p>
+                                            <label> <input type="checkbox" id="chk2"
+                                                           value="checkbox">The intention is not ambiguous.</label>
+
+                                            <input id="intent" type="text" name="intention_flag" value="" required="required" style="display: none">
+                                        </div>
+                                        -->
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                    <h3>Understand state and location of objects</h3>
+                    <ol id="objects-detection">
+                        <li>
+                            <div class="panel panel-default">
+                                <div class="panel-heading"></div>
+                                <div class="panel-body">
+                                    <h3>{{ dynamic.object_question.title }}</h3>
+                                    <p style="font-size: 120%; color: red">(Unless you feel a target object is difficult to recognize in the video, please choose its category in brackets, otherwise choose the most specific answer.)</b></p>
+                                    </br>
+                                    <input id="answer" :name="dynamic.object_question.name" value="" required style="display: none">
+                                    <ol v-for="obj in dynamic.object_question.answers" style="font-size: large">
+                                        <label>
+                                            <input class="objects" type="checkbox" disabled :value="obj" onClick="changeselect(this)">{{ obj }}
+                                        </label>
+                                    </ol>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Use the short-instructions section for quick instructions that the Worker
+           will see while working on the task. Including some basic examples of
+           good and bad answers here can help get good results. You can include
+           any HTML here. -->
+    <short-instructions>
+        <div>
+
+            <h3>Overview</h3>
+            <p>
+                We want to collect data regarding how people understand the daily circumstances for AI research.
+                In this task, you will watch a video, ask a question regarding people's intention, and answer a couple of questions according to the video.
+            </p>
+
+            <p>
+                <b>If you do not follow the following rules, we may reject your answer.</b>
+            </p>
+            <h4>Rules:</h4>
+            <ul>
+                <li>You should follow the rules described in <i>Instructions</i> of asking a question about intention. </li>
+                <li>The questions you ask should be meaningful and reflect what happend in the video. The provided answer is a correct one to your question.</li>
+                <li>The answer to the questions regarding objects should reflect accuractely what happened in the video.</li>
+            </ul>
+
+
+        </div>
+
+    </short-instructions>
+
+
+    <!-- Use the full-instructions section for more detailed instructions that the
+          Worker can open while working on the task. Including more detailed
+          instructions and additional examples of good and bad answers here can
+          help get good results. You can include any HTML here. -->
+    <full-instructions header="Video Classification Instructions">
+
+    </full-instructions>
+</crowd-form>
+<script type="text/javascript">
+    var obj = new Vue({
+        el: '#all',
+        data: {
+            dynamic: ${data}
+        },
+        methods: {},
+        filters: {}
+    })
+
+    // transfer the action sequence to action list
+    var action_list = obj.dynamic.intention.action.split('->');
+    console.log(action_list);
+
+    // this function is used to cut the string into a double-letter format list
+    // eg: "clean the kitchen"->['cl','le','ea','an','nt','th','he','ek','ki','it','tc','ch','he','en']
+    function cutstring(str) {
+        str = str.toString().replace(/\s/g,"");
+        str = str.toLowerCase();
+        var new_list  = new Array();
+        // console.log(str);
+        for (var i = 0; i < str.length - 1; i++){
+            new_list.push(str[i] + str[i+1])
+        }
+        // console.log(new_list);
+        return new_list;
+    }
+
+    // validate the input,if the input is very similar to the actionlist,return true,that means there exists false input
+    function validate_rules(input,actionlist) {
+        var flag = false;
+        var input_list = cutstring(input);
+        for (var i = 0; i < actionlist.length; i++){
+            var action = cutstring(actionlist[i]);
+            // console.log(action);
+            // console.log(input_list);
+            var intersection = input_list.filter(function (v) {
+                return action.indexOf(v) > -1
+            });
+            var union = input_list.concat(action.filter(function(v){ return !(input_list.indexOf(v) > -1)}));
+            // console.log(intersection);
+            // console.log(union);
+            if(intersection.length/union.length > 0.8){
+                // console.log("Get the error line");
+                flag = true;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    function validate(input) {
+        if(validate_rules(input.value,action_list)){
+            input.setCustomValidity("Do not copy an action from the provided actions as intention");
+        }else{
+        //no error ,clear the error message
+            console.log("no error");
+            input.setCustomValidity("");
+        }
+    }
+
+
+    function changeselect(selectname) {
+        answer = document.getElementById("answer");
+        answer.value = "";
+        yesanswer = document.getElementsByClassName("objects")
+        for (var i = 0; i <= yesanswer.length - 1; i++) {
+            if (yesanswer[i].checked) answer.value = answer.value + yesanswer[i].value + ","
+        }
+        return answer.innerText;
+    }
+
+    var vid = document.getElementById("videoPlayerNew");
+    vid.onloadedmetadata = function () {
+        console.log('metadata loaded!');
+        console.log(vid.duration); //打印时长
+        setTimeout('enableAnswers()', vid.duration * 1000);
+    }
+
+    function enableAnswers() {
+        var tags = document.getElementsByClassName('intent-input');
+        for (var i in tags) {
+            if (tags[i].tagName === 'INPUT') {
+                tags[i].removeAttribute('disabled');
+            }
+        }
+
+        var inputtag = document.getElementsByClassName('objects');
+        for (var i in inputtag) {
+            if (inputtag[i].tagName === 'INPUT') {
+                inputtag[i].removeAttribute('disabled');
+            }
+        }
+    }
+
+    // var chk1 = $("#chk1");
+    // var chk2 = $("#chk2");
+    // var intent = $("#intent");
+    // var intent_detail = $("#intent-detail");
+
+    // var add_intention = function(){
+    //     var input = ($('<input>')
+    //             .attr({'type': 'text',
+    //                 'name': 'intention',
+    //                 'placeholder': 'input the concrete intentions..',
+    //                 'required': 'required',
+    //                 'style': "width: 100%;border-color: #878787;border-style: solid;border-top-width: 0px;border-right-width: 0px;border-bottom: #787878 1px solid;border-left-width: 0px;font-size: medium"})
+    //     );
+
+    //     return input;
+    // };
+
+    // intent_detail.append(add_intention());
+
+    // inplement mutex of the checkbox
+    // chk1.change(function () {
+    //     document.getElementById("chk2").checked = false;
+    //     if ($(this).is(":checked")) {
+    //         intent.val('intention is ambiguous');
+    //         intent_detail.empty();
+    //     } else {
+    //         // remove_otherevents();
+    //     }
+    //     // show();
+    // });
+
+    // chk2.change(function () {
+    //     document.getElementById("chk1").checked = false;
+    //     if ($(this).is(":checked")) {
+    //         intent.val('intention is not ambiguous');
+    //         intent_detail.append(add_intention());
+    //     } else {
+    //         intent_detail.empty();
+    //     }
+    // });
+</script>
+
+
+</body>
+</html>

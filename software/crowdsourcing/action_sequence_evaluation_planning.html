@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<link href="https://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<style>
+    .content {
+        display: inline-flex;
+    }
+
+    li {
+        list-style-type: upper-roman;
+    }
+
+    li.dot {
+        list-style-type: disc;
+        font-weight: bold;
+    }
+
+    hr {
+    border: 0;
+    border-bottom: 2px solid black;
+    }
+
+    #email {
+        width: 30%;
+        border-color: #878787;
+        border-style: solid;
+        border-top-width: 0px;
+        border-right-width: 0px;
+        border-bottom: #787878 1px solid;
+        border-left-width: 0px
+    }
+
+    .introduction-title {
+        color: blue;
+        font-weight: bold;
+        font-size: xx-large;
+    }
+
+    .content {
+        margin-bottom: 15px;
+    }
+</style>
+
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+      please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+<crowd-form id="all" answer-format="flatten-objects">
+
+    <!-- The crowd-classifier element will create a tool for the Worker to select the
+           correct answer to your question -->
+
+    <div class="panel panel-default">
+        <div class="panel-heading">VIDEO</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    <classification-target>
+                        <video id="videoPlayerNew" width="100%" height="350" controls>
+
+                            <!-- Your video file URLs will be substituted for the "video_url" attribute below when
+                                   you publish a batch with a CSV input file containing multiple video file URLs -->
+                            <source :src="dynamic.video_url" type="video/mp4">
+
+                        </video>
+                    </classification-target>
+                </div>
+                <hr style=""/>
+                <div id="questions" class="col-sm-12">
+                    <h2>Watch the partial video and complete the following Task</h2>
+                    <p style="font-size: 120%"><b>This task requires collecting answers for one hundred videos.
+                        Experienced workers are highly encouraged to work on the other HITs of this work.</b></p>
+                    <hr/>
+                    <h3>Judge whether the action sequence will take place according to partial video, related action sequence and matches the given intention</h3>
+
+                    <div class="form-row">
+                        <!--
+                        <h3>{{ dynamic.intention.title }}</h3>
+                        -->
+                        <div class="instructions">
+                            <h3 style="color: red">Instructions:</h3>
+                            <p style="font-size: large;color: red">We will provide you a part of an video and the related action sequence of partial video and a given intention of the video,you should judge whether those action sequences will take place in the video and matches the given intention</p>
+                            <p style="font-size: 110%">An action sequence is true only if all actions are taken by the
+                                same person and the action sequence matches the given intention. There might be more
+                                than one action taken at the same time, such as drinking and watching movie. In that
+                                case, both "drinking -> watching movie" and "watching movie -> drinking are correct".</p>
+                            <p style="font-size: 110%">We provide the following examples.</p>
+                            <h4></h4>
+                            <p> For example, the partial content of a video is
+                                <i style="color: red">"A person is holding a pair of shoes, then throws the pair shoes somewhere, etc..</i> </p>
+
+                            <p style="color: red">observed content:<i>Holding a shoe/shoes->Throwing shoes
+                                    somewhere</i></p>
+                            <p style="color: red">given content:<i>dress himself</i></p>
+                            <!--p style="font-size: 110%">You should choose <b>The intention is ambiguous.</b>, if you cannot tell what the person intends to do, e.g. the person simply walks through a room without doing anything else.
+                            or you cannot summarize the actions the person has taken into one or two high-level activities o. For example, the person was watching a movie first, then opened his bag, took out a book, and put it on the table etc.</p -->
+
+                            <p style="font-size: 120%;color: blue"><b>True:</b></p>
+                            <ul>
+                                <li style="font-size: 110%;color: blue;">"Putting on shoe/shoes->Someone is dressing"<br>
+                                    <p><i>Explanation: the action sequence maybe take place in the video and matches the given
+                                        intention</i>
+                                    </p>
+                                </li>
+                            </ul>
+                            <br/>
+                            <p style="color: red">given content:<i>have a drink</i></p>
+                            <p style="font-size: 120%;color: red"><b>False:</b></p>
+                            <ul>
+                                <li style="font-size: 110%;color: red">"drink a coffee->put down a bottle"</p>
+                                    <p><i>Explanation: the action sequence does not match the given intention</i>
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+
+
+                        <!--
+                        <div class="col-sm-12">
+                            <p>
+                            <label> <input type="checkbox" id="chk1"
+                                           value="checkbox">The intention is ambiguous.</label>
+
+                            </p>
+                            <label> <input type="checkbox" id="chk2"
+                                           value="checkbox">The intention is not ambiguous.</label>
+
+                            <input id="intent" type="text" name="intention_flag" value="" required="required" style="display: none">
+                        </div>
+                        -->
+                    </div>
+
+                    <hr/>
+                    <div>
+                        <h1 style="color: green;font-size: large"><b>Related action sequence of the partially observed video:</b>{{ dynamic.observed_content }}</h1>
+                    </div>
+
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><b style="color: red; font-size: large">You should pay attention to those bold actions,and choose the properest sequence
+                        </b></div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            Action sequences to verify
+                                        </th>
+                                        <th>
+                                            Intention of the person in the video
+                                        </th>
+                                        <th>
+                                            Which action sequence will take places according to the partially observed video and content of the partial video,besides it should match
+                                            the given intention?</br>
+                                            <b style="font-size: medium;color: red">an action sequence is true only if
+                                                those actions are related to partial video and are likely the future of observed content to some extend, and match the given intention.</b>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="one in dynamic.content" class="success">
+                                        <td v-html="one.action_sequence"></td>
+                                        <td v-html="dynamic.intention"></td>
+                                        <td>
+                                                    <label> <input class="selection" type="radio" :name="one.name"
+                                                                   value="True"
+                                                                   onClick="changeselect(this)" disabled onchange="checkanswers(this)">True</label>
+
+                                                    <label> <input class="selection" type="radio" :name="one.name"
+                                                                   value="False"
+                                                                   onClick="changeselect(this)" disabled>False</label>
+                                                    <input class="output_answers" :id="one.name" :name="one.name" value=""
+                                                           required
+                                                           style="display: none">
+                                                </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Use the short-instructions section for quick instructions that the Worker
+          will see while working on the task. Including some basic examples of
+          good and bad answers here can help get good results. You can include
+          any HTML here. -->
+    <short-instructions>
+        <div>
+
+            <h3>Overview</h3>
+            <p>
+                We want to collect data regarding how people understand the daily circumstances for AI research.
+                In this task, you will watch a video,determine whether these action sequences match the content and time
+                sequence in the video
+            </p>
+
+            <p>
+                <b>If you do not follow the following rules, we may reject your answer.</b>
+            </p>
+            <h4>Rules:</h4>
+
+            <ul>
+                <li>You should follow the rules described in <i>Instructions</i> of our task
+                </li>
+                <li>do not randomly select "True" or "False",follow the content and time sequence of the video
+                </li>
+            </ul>
+        </div>
+
+    </short-instructions>
+
+    <!-- Use the full-instructions section for more detailed instructions that the
+          Worker can open while working on the task. Including more detailed
+          instructions and additional examples of good and bad answers here can
+          help get good results. You can include any HTML here. -->
+    <full-instructions header="Video Classification Instructions">
+
+    </full-instructions>
+</crowd-form>
+<script type="text/javascript">
+    var obj = new Vue({
+        el: '#all',
+        data: {
+            dynamic: {
+                video_url: 'https://swift.rc.nectar.org.au/v1/AUTH_f15e4ae346d14263879f497e9c9c7d2b/multimodal_kb/DS22L.mp4',
+                content: [
+                    {
+                        action_sequence: '<b>Someone is cooking something</b>->Holding a dish->Drinking from a cup/glass/bottle->Putting a dish/es somewhere',
+                        name: 'sequence0_flag'
+                    },
+                    {
+                        action_sequence: '<b>Someone is cooking something</b>->Holding a dish->Drinking from a cup/glass/bottle->Putting a dish/es somewhere',
+                        name: 'sequence1_flag'
+                    },
+                                        {
+                        action_sequence: '<b>Someone is cooking something</b>->Holding a dish->Drinking from a cup/glass/bottle->Putting a dish/es somewhere',
+                        name: 'sequence2_flag'
+                    },                    {
+                        action_sequence: '<b>Someone is cooking something</b>->Holding a dish->Drinking from a cup/glass/bottle->Putting a dish/es somewhere',
+                        name: 'sequence3_flag'
+                    }
+                ],
+                intention: 'have a drink',
+                observed_content:'Opening a door->Opening a closet/cabinet->Putting groceries somewhere'
+            }
+        },
+        methods: {},
+        filters: {}
+    })
+
+    var vid = document.getElementById("videoPlayerNew");
+    vid.onloadedmetadata = function () {
+        console.log('metadata loaded!');
+        console.log(vid.duration); //打印时长
+        setTimeout('enableAnswers()', vid.duration * 1000);
+    };
+
+    function enableAnswers() {
+        var tags = document.getElementsByClassName('selection');
+        for (var i in tags) {
+            if (tags[i].tagName === 'INPUT') {
+                tags[i].removeAttribute('disabled');
+            }
+        }
+    }
+
+
+    function changeselect(obj) {
+        if (obj.checked) {
+            // console.log(obj.name)
+            answer = $("#" + obj.name)
+            answer[0].value = obj.value
+        }
+        // answer = document.getElementById("answer");
+        // answer.value = "";
+        // yesanswer = document.getElementsByClassName("objects")
+        // for (var i = 0; i <= yesanswer.length - 1; i++) {
+        //     if (yesanswer[i].checked) answer.value = answer.value + yesanswer[i].value + ","
+        // }
+        // return answer.innerText;
+    }
+
+    function checkanswers(obj) {
+        all_output = document.getElementsByClassName('output_answers');
+
+        // all_outputs = [1,2,3,4,5]
+        // console.log(all_output)
+        let truenum = 0
+        for( let o of all_output){
+            // console.log(o.value)
+            if(o.value === 'True'){
+                truenum += 1
+            }
+        }
+        console.log(truenum)
+        if(truenum > 1){
+            alert("You should choose only one true future sequence!")
+            obj.checked = false
+        }
+        // console.log(all_output)
+    }
+
+
+
+</script>
+</body>
+</html>
